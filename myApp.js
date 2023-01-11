@@ -1,13 +1,10 @@
 require('dotenv').config({path:'./process.env'});
 
 //Install and setup Mongoose
-const mongooseConnect = process.env['MONGO_URI'];
+const mongooseConnect = process.env.MONGO_URI;
 const mongoose = require('mongoose');
-mongoose.connect(mongooseConnect,{ useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
-  console.log('Connected to Mongo!');
-}).catch(err => {
-  console.log(err);
-});
+mongoose.connect(mongooseConnect,{ useNewUrlParser: true, useUnifiedTopology: true });
+console.log(mongooseConnect);
 
 //Creating a model
 //Create a person schema called personSchema
@@ -25,15 +22,34 @@ let personSchema = new mongoose.Schema({
 let Person = mongoose.model('Person',personSchema);
 //console.log(Person);
 
+
 //Create and Save a Record of a Model
 const createAndSavePerson = (done) => {
   //Creating a new person
   let dummyPerson = new Person({name:'Patrick', age:25});
-  console.log(dummyPerson)
+  //console.log(dummyPerson)
+  //saving the person to the DB
+  dummyPerson.save((err, data) =>{
+    if(err) {
+      return console.log(err);
+    }
+    console.log('Added to Database');
+    done(null,data);
+  } )
 };
 
+
+//Create Many Records with model.create()
+var manyPeople =[{ name: 'Vicente', age:25, favoriteFoods:['Tacos']}, {name:'Blas', age: 32, favoriteFoods:['Oysters']}];
+console.log(manyPeople);
 const createManyPeople = (arrayOfPeople, done) => {
-  done(null /*, data*/);
+  //Creating multiple records
+  Person.create(arrayOfPeople, (err,people) => {
+    if(err) {
+      return console.log(err);
+    }
+    done(null,people);
+  })
 };
 
 const findPeopleByName = (personName, done) => {
