@@ -1,10 +1,10 @@
-require('dotenv').config({path:'./process.env'});
+require('dotenv').config();
 
 //Install and setup Mongoose
 const mongooseConnect = process.env.MONGO_URI;
 const mongoose = require('mongoose');
 mongoose.connect(mongooseConnect,{ useNewUrlParser: true, useUnifiedTopology: true });
-console.log(mongooseConnect);
+//console.log(mongooseConnect);
 
 //Creating a model
 //Create a person schema called personSchema
@@ -22,7 +22,6 @@ let personSchema = new mongoose.Schema({
 let Person = mongoose.model('Person',personSchema);
 //console.log(Person);
 
-
 //Create and Save a Record of a Model
 const createAndSavePerson = (done) => {
   //Creating a new person
@@ -32,30 +31,37 @@ const createAndSavePerson = (done) => {
   dummyPerson.save((err, data) =>{
     if(err) {
       return console.log(err);
-    }
-    console.log('Added to Database');
-    done(null,data);
+    } 
+      done(null,data);
+      console.log('Added to database');
   } )
 };
 
 
 //Create Many Records with model.create()
-var manyPeople =[{ name: 'Vicente', age:25, favoriteFoods:['Tacos']}, {name:'Blas', age: 32, favoriteFoods:['Oysters']}];
-console.log(manyPeople);
 const createManyPeople = (arrayOfPeople, done) => {
-  //Creating multiple records
-  Person.create(arrayOfPeople, (err,people) => {
-    if(err) {
-      return console.log(err);
-    }
-    done(null,people);
-  })
+    Person.create(arrayOfPeople,(err,people) => {
+      if(err) {
+        return console.log(err);
+      }
+      done(null,people);
+      console.log('Created!')
+    })
+    //done(null,people);
 };
 
-const findPeopleByName = (personName, done) => {
-  done(null /*, data*/);
+//Use model.find() to Search your Database
+const findPeopleByName = (personName, done ) => {
+    Person.find({name: personName},(err,person) => {
+      if(err) {
+        return console.log(err);
+      }
+      done(null , person);
+      console.log('Person founded');
+    })
 };
 
+//Use model.findOne() to Return a Single Matching Document from Your Database
 const findOneByFood = (food, done) => {
   done(null /*, data*/);
 };
