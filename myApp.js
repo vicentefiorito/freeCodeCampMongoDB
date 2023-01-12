@@ -63,39 +63,91 @@ const findPeopleByName = (personName, done ) => {
 
 //Use model.findOne() to Return a Single Matching Document from Your Database
 const findOneByFood = (food, done) => {
-  done(null /*, data*/);
+  Person.findOne({favoriteFoods: food}, (err,data) => {  //Parameters in the method functions need to be the same ones that are used in the schemas, in this case favoriteFoods
+    if(err) {
+      return console.log(err)
+    }
+    done(err,data);
+  })
 };
 
+//Use model.findById() to Search Your Database By _id
 const findPersonById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findById(personId, (err,id) => {
+    if(err) {
+      console.log(err);
+    }
+    done(null , id);
+  });
 };
 
+//Perform Classic Updates by Running Find, Edit, then Save
 const findEditThenSave = (personId, done) => {
   const foodToAdd = "hamburger";
+  Person.findById(personId, (err,person) => {
+    if(err) {
+      console.log(err);
+    }
+    person.favoriteFoods.push(foodToAdd);// Adds the variable into the array
+    //console.log(person.favoriteFoods);
+    //Saves the updated person into the DB
+    person.save((err,updatedPerson) => {
+      if(err) {
+        return console.log(err);
+      }
+      done(null, updatedPerson)
+    })
+  });
 
-  done(null /*, data*/);
 };
 
+//Perform New Updates on a Document Using model.findOneAndUpdate()
 const findAndUpdate = (personName, done) => {
   const ageToSet = 20;
+  //Arguments need to be passed as JS objects
+  Person.findOneAndUpdate({name: personName},{age: ageToSet},{new:true},(err, updatedDoc) => {
+    if(err) {
+      return console.log(err)
+    }
+    done(null , updatedDoc );
+  })
 
-  done(null /*, data*/);
 };
 
+//Delete One Document Using model.findByIdAndRemove
 const removeById = (personId, done) => {
-  done(null /*, data*/);
+  Person.findByIdAndRemove(personId, (err,removed) => {
+    if(err) {
+      return console.log(err);
+    }
+    done(null, removed);
+  })
 };
 
+//Delete Many Documents with model.remove()
 const removeManyPeople = (done) => {
   const nameToRemove = "Mary";
+  Person.remove({name:nameToRemove}, (err, removedPerson) => { //Need to pass the name argument as a JS object
+    if(err) {
+      return console.log(err)
+    }
+    done(null, removedPerson);
+  }) 
 
-  done(null /*, data*/);
 };
 
+//Chain Search Query Helpers to Narrow Search Results
 const queryChain = (done) => {
   const foodToSearch = "burrito";
+  const personName = Person.name;
+  Person.find({favoriteFoods:foodToSearch}).sort({name:"asc"}).limit(2).select({age:0}).exec((err, search) => {
+    if(err) {
+      return console.log(err);
+    }
+    done(null, search);
+    console.log('Chain executed');
+  })
 
-  done(null /*, data*/);
 };
 
 /** **Well Done !!**
